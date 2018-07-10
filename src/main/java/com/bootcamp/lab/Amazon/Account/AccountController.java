@@ -1,5 +1,7 @@
 package com.bootcamp.lab.Amazon.Account;
 
+import com.bootcamp.lab.Amazon.Address.Address;
+import com.bootcamp.lab.Amazon.Address.AddressRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -8,8 +10,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/account")
 public class AccountController {
 
-    @Autowired
     AccountRepo accountrepo;
+    AddressRepo addressRepo;
+
+    public AccountController(AccountRepo accountRepo, AddressRepo addressRepo){
+        this.accountrepo = accountRepo;
+        this.addressRepo = addressRepo;
+    }
 
     //Create Account
     @PostMapping("/{fname}/{lname}/{email}")
@@ -23,16 +30,20 @@ public class AccountController {
     @GetMapping("/{id}")
     public @ResponseBody String getAccount(@PathVariable(name = "id") Long id) {
         Account result = accountrepo.findById(id).get();
+        if(result.getAddress()!= null){
+            return result.getFirstName() + " " + result.getAddress().iterator().next().getStreet();
+        }
         return result.getFirstName() + " " + result.getLastName();
     }
 
-    //Change email
-    @PutMapping("/{id}/{email}")
-    public @ResponseBody String updateAccount(@PathVariable(name = "id") Long id, @PathVariable(name = "email") String email) {
+    //Change address
+    @PutMapping("/{id}/{address}")
+    public @ResponseBody String updateAccount(@PathVariable(name = "id") Long id, @PathVariable(name = "address") Integer address_id) {
         Account result = accountrepo.findById(id).get();
-        result.setEmail(email);
+        Address address = addressRepo.findById(address_id).get();
+        result.setAddress(address);
         accountrepo.save(result);
-        return "updated.";
+        return "New street for: " + result.getFirstName() + ", " + address.getStreet();
     }
 
     //Delete by id

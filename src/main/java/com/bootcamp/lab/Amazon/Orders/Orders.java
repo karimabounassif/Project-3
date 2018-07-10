@@ -3,7 +3,6 @@ package com.bootcamp.lab.Amazon.Orders;
 import com.bootcamp.lab.Amazon.Account.Account;
 import com.bootcamp.lab.Amazon.Address.Address;
 import com.bootcamp.lab.Amazon.OrderLine.OrderLineItems;
-
 import javax.persistence.*;
 import java.util.Date;
 
@@ -25,6 +24,14 @@ public class Orders {
     @JoinColumn(name="orderline_id")
     private OrderLineItems orderLine;
     private Double totalPrice;
+
+    public Orders(){}
+
+    public Orders(Date orderDate, Double totalPrice){
+        this.orderNumber = this.order_id;
+        this.orderDate = orderDate;
+        this.totalPrice = totalPrice;
+    }
 
     public Integer getId() {
         return order_id;

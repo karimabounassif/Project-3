@@ -2,6 +2,7 @@ package com.bootcamp.lab.Amazon.Shipment;
 
 import com.bootcamp.lab.Amazon.Account.Account;
 import com.bootcamp.lab.Amazon.Address.Address;
+import com.bootcamp.lab.Amazon.OrderLine.OrderLineItems;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -18,8 +19,19 @@ public class Shipment {
     @OneToOne
     @JoinColumn(name="address_id")
     private Address address;
+    @OneToOne
+    @JoinColumn(name="orderline_id")
+    private OrderLineItems orderline;
     private Date shippedDate;
     private Date deliveryDate;
+
+    public Shipment() {}
+
+    public Shipment(Date ship_date, Date delivery_date)
+    {
+        this.shippedDate=ship_date;
+        this.deliveryDate=delivery_date;
+    }
 
     public Integer getId() {
         return shipment_id;
@@ -61,4 +73,11 @@ public class Shipment {
         this.deliveryDate = deliveryDate;
     }
 
+    public OrderLineItems getOrderline() {
+        return orderline;
+    }
+
+    public void setOrderline(OrderLineItems orderline) {
+        this.orderline = orderline;
+    }
 }

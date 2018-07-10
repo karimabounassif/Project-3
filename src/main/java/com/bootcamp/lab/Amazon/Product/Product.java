@@ -8,12 +8,30 @@ import javax.persistence.Id;
 @Entity
 public class Product {
 
+    public Product() {}
+
+    public Product(String name, String image, String description, Double price){
+        this.name= name;
+        this.image=image;
+        this.price=price;
+        this.description = description;
+    }
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer product_id;
     private String name;
     private String image;
     private Double price;
+    private String description;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public Integer getId() {
         return product_id;

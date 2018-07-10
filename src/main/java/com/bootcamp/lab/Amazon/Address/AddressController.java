@@ -10,22 +10,21 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/address")
 public class AddressController {
 
-    @Autowired
     AddressRepo addressrepo;
-
-    @Autowired
     AccountRepo accountRepo;
 
+    public AddressController(AddressRepo addressRepo, AccountRepo accountRepo){
+        this.addressrepo = addressRepo;
+        this.accountRepo = accountRepo;
+    }
+
     //Create
-    @PostMapping("/{street}/{apt}/{city}/{state}/{postal}/{country}/{account}")
+    @PostMapping("/{street}/{apt}/{city}/{state}/{postal}/{country}")
     public @ResponseBody String newAddress(@PathVariable(name="street") String street, @PathVariable(name="apt") String apt,
                       @PathVariable(name="city") String city, @PathVariable(name="state") String state,
-                      @PathVariable(name="postal") String postal, @PathVariable(name="country") String country,
-                      @PathVariable(name="account") Long account_id) {
+                      @PathVariable(name="postal") String postal, @PathVariable(name="country") String country) {
 
         Address address = new Address(street, apt, city, state, postal, country);
-        Account account = accountRepo.findById(account_id).get();
-        address.setAccount(account);
         addressrepo.save(address);
         return "saved.";
     }
@@ -34,7 +33,7 @@ public class AddressController {
     @GetMapping("/{id}")
     public @ResponseBody String findAddress(@PathVariable(name="id") Integer id){
         Address address = addressrepo.findById(id).get();
-        return address.getStreet() + " - " + address.getAccount().getFirstName();
+        return address.getStreet();
     }
 
     //Change street

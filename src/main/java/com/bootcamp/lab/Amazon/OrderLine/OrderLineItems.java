@@ -12,15 +12,24 @@ public class OrderLineItems {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer orderline_id;
-    @OneToMany
+    @OneToOne
     @JoinColumn(name="product_id")
-    private Set<Product> product;
+    private Product product;
     private Double quantity;
     private Double price;
     private Double totalPrice;
     @OneToOne
     @JoinColumn(name = "shipment_id")
     private Shipment shipment;
+
+    public OrderLineItems(){}
+
+    public OrderLineItems(Product product, Double quantity, Double price, Double totalPrice){
+        this.product = product;
+        this.quantity = quantity;
+        this.price = price;
+        this.totalPrice = totalPrice;
+    }
 
     public Integer getId() {
         return orderline_id;
@@ -30,11 +39,11 @@ public class OrderLineItems {
         this.orderline_id = id;
     }
 
-    public Set<Product> getProduct() {
+    public Product getProduct() {
         return product;
     }
 
-    public void setProduct(Set<Product> product) {
+    public void setProduct(Product product) {
         this.product = product;
     }
 

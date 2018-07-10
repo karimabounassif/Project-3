@@ -1,4 +1,6 @@
 package com.bootcamp.lab.Amazon.Shipment;
 
-public class ShipmentRepo {
+import org.springframework.data.repository.CrudRepository;
+
+public interface ShipmentRepo extends CrudRepository<Shipment, Integer>{
 }
