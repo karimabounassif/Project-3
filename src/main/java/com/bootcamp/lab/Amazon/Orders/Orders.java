@@ -5,6 +5,7 @@ import com.bootcamp.lab.Amazon.Address.Address;
 import com.bootcamp.lab.Amazon.OrderLine.OrderLineItems;
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class Orders {
@@ -20,23 +21,20 @@ public class Orders {
     @OneToOne
     @JoinColumn(name="address_id")
     private Address address;
-    @OneToOne
-    @JoinColumn(name="orderline_id")
-    private OrderLineItems orderLine;
+    @OneToMany(mappedBy = "orderline_id")
+    private List<OrderLineItems> orderLines;
     private Double totalPrice;
 
     public Orders(){}
 
-    public Orders(Date orderDate, Double totalPrice){
+    public Orders(Date orderDate){
         this.orderNumber = this.order_id;
         this.orderDate = orderDate;
-        this.totalPrice = totalPrice;
     }
 
     public Integer getId() {
         return order_id;
     }
-
     public void setId(Integer id) {
         this.order_id = id;
     }
@@ -44,7 +42,6 @@ public class Orders {
     public Account getAccount() {
         return account;
     }
-
     public void setAccount(Account account) {
         this.account = account;
     }
@@ -52,7 +49,6 @@ public class Orders {
     public Integer getOrderNumber() {
         return orderNumber;
     }
-
     public void setOrderNumber(Integer orderNumber) {
         this.orderNumber = orderNumber;
     }
@@ -60,7 +56,6 @@ public class Orders {
     public Date getOrderDate() {
         return orderDate;
     }
-
     public void setOrderDate(Date orderDate) {
         this.orderDate = orderDate;
     }
@@ -68,23 +63,20 @@ public class Orders {
     public Address getAddress() {
         return address;
     }
-
     public void setAddress(Address address) {
         this.address = address;
     }
 
-    public OrderLineItems getOrderLine() {
-        return orderLine;
+    public List<OrderLineItems> getOrderLine() {
+        return this.orderLines;
     }
-
-    public void setOrderLine(OrderLineItems orderLine) {
-        this.orderLine = orderLine;
+    public void setOrderLine(List<OrderLineItems> orderLine) {
+        this.orderLines = orderLine;
     }
 
     public Double getTotalPrice() {
         return totalPrice;
     }
-
     public void setTotalPrice(Double totalPrice) {
         this.totalPrice = totalPrice;
     }

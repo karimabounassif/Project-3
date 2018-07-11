@@ -6,12 +6,10 @@ import com.bootcamp.lab.Amazon.Address.Address;
 import com.bootcamp.lab.Amazon.Address.AddressRepo;
 import com.bootcamp.lab.Amazon.OrderLine.OrderLineItems;
 import com.bootcamp.lab.Amazon.OrderLine.OrderLineRepo;
-import com.bootcamp.lab.Amazon.Product.Product;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import javax.persistence.criteria.Order;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,56 +33,58 @@ public class OrdersController {
     }
 
     //New Order
-    @PostMapping("/{account_id}/{date}/{address_id}/{ol_id}/{totalPrice}")
-    public @ResponseBody String newOrder(@PathVariable(name = "account_id") Long account_id, @PathVariable(name="date") String date,
-                                         @PathVariable(name="address_id") Integer address_id, @PathVariable(name="ol_id") Integer ol_id,
-                                         @PathVariable(name="totalPrice") Double totalPrice) throws ParseException {
+    @PostMapping("/{account_id}/{date}/{address_id}/{ol_id}")
+    public ResponseEntity<Orders> newOrder(@PathVariable(name = "account_id") Long account_id, @PathVariable(name="date") String date,
+                                   @PathVariable(name="address_id") Integer address_id, @PathVariable(name="ol_id") Integer ol_id) throws ParseException {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Orders order = new Orders(sdf.parse(date), totalPrice);
+        Orders order = new Orders(sdf.parse(date));
         Account account = accountRepo.findById(account_id).get();
         Address address = addressRepo.findById(address_id).get();
         OrderLineItems orderLineItems = orderLineRepo.findById(ol_id).get();
+        List<OrderLineItems> ol = new ArrayList<>();
+        ol.add(orderLineItems);
+
+        order.setTotalPrice(orderLineItems.getTotalPrice());
         order.setAccount(account);
         order.setAddress(address);
-        order.setOrderLine(orderLineItems);
-        ordersRepo.save(order);
-        return "saved.";
+        order.setOrderLine(ol);
+        order.setOrderNumber(order.getId());
+
+        return new ResponseEntity<>(ordersRepo.save(order), HttpStatus.CREATED);
     }
 
     //Get order
     @GetMapping("/{id}")
-    public @ResponseBody String getOrder(@PathVariable(name="id") Integer id){
+    public ResponseEntity<Orders> getOrder(@PathVariable(name="id") Integer id){
         Orders order = ordersRepo.findById(id).get();
-        return "Order of " + order.getOrderLine().getProduct().getName() + "x" + order.getOrderLine().getQuantity().toString() + " to: "
-                + order.getAccount().getFirstName() + " at: " + order.getAddress().getStreet();
+        return new ResponseEntity<>(order, HttpStatus.OK);
     }
 
     //Get all orders for one account
     @GetMapping("/account/{account_id}")
-    public @ResponseBody String getAllOrder(@PathVariable(name="account_id") Long account_id){
+    public ResponseEntity<List<Orders>> getAllOrder(@PathVariable(name="account_id") Long account_id){
         Iterator<Orders> it = ordersRepo.findAll().iterator();
         Account account = accountRepo.findById(account_id).get();
-        String ret = "The following are orders for account # " + account.getId() + ":";
         List<Orders> orders = new ArrayList<>();
         while(it.hasNext()){
             Orders current = it.next();
             if(current.getAccount() == account){
                 orders.add(current);
-                ret += ", " + current.getId();
             }
         }
-        return ret;
+        return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
-    //Update OrderLine
+    //Add orderline
     @PutMapping("/{id}/{ol_id}")
-    public @ResponseBody String updateProduct(@PathVariable(name="id") Integer id, @PathVariable(name="ol_id") Integer ol_id){
+    public ResponseEntity<Orders> updateProduct(@PathVariable(name="id") Integer id, @PathVariable(name="ol_id") Integer ol_id) {
         Orders order = ordersRepo.findById(id).get();
         OrderLineItems orderLineItems = orderLineRepo.findById(ol_id).get();
-        order.setOrderLine(orderLineItems);
-        ordersRepo.save(order);
-        return "New Order: " + order.getOrderLine().getProduct() + "x" + order.getOrderLine().getQuantity().toString();
+        List<OrderLineItems> ol = order.getOrderLine();
+        ol.add(orderLineItems);
+        order.setOrderLine(ol);
+        return new ResponseEntity<>(ordersRepo.save(order), HttpStatus.OK);
     }
 
     //Delete Order

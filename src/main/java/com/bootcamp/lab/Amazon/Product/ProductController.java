@@ -1,6 +1,8 @@
 package com.bootcamp.lab.Amazon.Product;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,28 +18,26 @@ public class ProductController {
 
     //Get by id
     @GetMapping("/{id}")
-    public @ResponseBody String getProduct(@PathVariable(name="id") Integer id){
+    public ResponseEntity<Product> getProduct(@PathVariable(name="id") Integer id){
         Product product = productrepo.findById(id).get();
-        return product.getName();
+        return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     //New product
     @PostMapping("/{name}/{description}/{image}/{price}")
-    public @ResponseBody String newProduct(@PathVariable(name="name") String name, @PathVariable(name="description") String description,
+    public ResponseEntity<Product> newProduct(@PathVariable(name="name") String name, @PathVariable(name="description") String description,
                                            @PathVariable(name="image") String image, @PathVariable(name="price") Double price){
 
         Product product = new Product(name, image, description, price);
-        productrepo.save(product);
-        return "saved.";
+        return new ResponseEntity<>(productrepo.save(product), HttpStatus.OK);
     }
 
     //Change product name
     @PutMapping("/{id}/{name}")
-    public @ResponseBody String changeProduct(@PathVariable(name="id") Integer id, @PathVariable(name="name") String name){
+    public ResponseEntity<Product> changeProduct(@PathVariable(name="id") Integer id, @PathVariable(name="name") String name){
         Product product = productrepo.findById(id).get();
         product.setName(name);
-        productrepo.save(product);
-        return "New name: " + product.getName();
+        return new ResponseEntity<>(productrepo.save(product), HttpStatus.OK);
     }
 
     //Delete product

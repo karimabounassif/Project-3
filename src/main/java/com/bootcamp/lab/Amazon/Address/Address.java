@@ -16,9 +16,6 @@ public class Address {
     private String state;
     private String postal;
     private String country;
-    @ManyToOne
-    @JoinColumn(name="account_id")
-    private Account account;
 
     public Address() {}
 
@@ -85,14 +82,6 @@ public class Address {
 
     public void setCountry(String country) {
         this.country = country;
-    }
-
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
     }
 
 

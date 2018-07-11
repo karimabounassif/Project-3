@@ -1,8 +1,8 @@
 package com.bootcamp.lab.Amazon.Address;
 
-import com.bootcamp.lab.Amazon.Account.Account;
 import com.bootcamp.lab.Amazon.Account.AccountRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,29 +20,27 @@ public class AddressController {
 
     //Create
     @PostMapping("/{street}/{apt}/{city}/{state}/{postal}/{country}")
-    public @ResponseBody String newAddress(@PathVariable(name="street") String street, @PathVariable(name="apt") String apt,
-                      @PathVariable(name="city") String city, @PathVariable(name="state") String state,
-                      @PathVariable(name="postal") String postal, @PathVariable(name="country") String country) {
+    public ResponseEntity<Address> newAddress(@PathVariable(name="street") String street, @PathVariable(name="apt") String apt,
+                                              @PathVariable(name="city") String city, @PathVariable(name="state") String state,
+                                              @PathVariable(name="postal") String postal, @PathVariable(name="country") String country) {
 
         Address address = new Address(street, apt, city, state, postal, country);
-        addressrepo.save(address);
-        return "saved.";
+        return new ResponseEntity<>(addressrepo.save(address), HttpStatus.CREATED);
     }
 
     //Get by id
     @GetMapping("/{id}")
-    public @ResponseBody String findAddress(@PathVariable(name="id") Integer id){
+    public ResponseEntity<Address> findAddress(@PathVariable(name="id") Integer id){
         Address address = addressrepo.findById(id).get();
-        return address.getStreet();
+        return new ResponseEntity<>(address, HttpStatus.OK);
     }
 
     //Change street
     @PutMapping("/{id}/{street}")
-    public @ResponseBody String updateAccount(@PathVariable(name = "id") Integer id, @PathVariable(name = "street") String street) {
+    public ResponseEntity<Address> updateAccount(@PathVariable(name = "id") Integer id, @PathVariable(name = "street") String street) {
         Address result = addressrepo.findById(id).get();
         result.setStreet(street);
-        addressrepo.save(result);
-        return "updated.";
+        return new ResponseEntity<>(addressrepo.save(result), HttpStatus.OK);
     }
 
     //Delete by id

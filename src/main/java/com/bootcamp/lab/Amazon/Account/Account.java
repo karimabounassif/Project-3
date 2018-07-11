@@ -13,8 +13,7 @@ public class Account {
     private String firstName;
     private String lastName;
     private String email;
-    @OneToMany
-    @JoinColumn(name="address_id")
+    @OneToMany(mappedBy = "address_id")
     private Set<Address> address;
 
     public Account(){}
